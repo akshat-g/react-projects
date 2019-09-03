@@ -2,71 +2,48 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-class Todo extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            items: [],
-            text: ''
-        }
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+const TodoList = props => (
+  <ul>
+    {
+      props.items.map((item, index) => <li key={index}>{item}</li>)
     }
-
-    render() {
-        return (
-            <div>
-                <h3>TODO</h3>
-                <TodoList items={this.state.items}/>
-                <form onSubmit={this.handleSubmit}>
-                    <input
-                        onChange={this.handleChange}
-                        value={this.state.text}
-                    />
-                    <button>
-                        Add #{this.state.items.length + 1}
-                    </button>
-                </form>
-            </div>
-        );
-    }
-
-    handleChange(e) {
-        this.setState({ text: e.target.value });
-    }
-
-    handleSubmit(e) {
-        e.preventDefault();
-        if(!this.state.text.length) {
-            return;
-        }
-        const newItem = {
-            id: Date.now(),
-            text: this.state.text,
-        }
-        this.setState(prev => ({
-            items: prev.items.concat(newItem),
-            text: ''
-        }));
-    }
-}
-
-class TodoList extends React.Component {
-    render() {
-        return (
-            <ul>
-                {this.props.items.map(item => (
-                    <li key={item.id}>{item.text}</li>
-                ))}
-            </ul>
-        )
-    }
-}
-
-
-// ========================================
-
-ReactDOM.render(
-    <Todo />,
-    document.getElementById('root')
+  </ul>
 );
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      term: '',
+      items: []
+    };
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
+
+  onSubmit(event) {
+    event.preventDefault();
+    this.setState({
+      term: '',
+      items: [...this.state.items, this.state.term]
+    });
+  }
+
+  onChange(event) {
+    this.setState({term: event.target.value});
+  }
+
+  render() {
+    return (
+      <div>
+        <form className="App" onSubmit={this.onSubmit}>
+          <input value={this.state.term} onChange={this.onChange} />
+          <button>Submit</button>
+        </form>
+        <TodoList items={this.state.items} />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById('container'));
